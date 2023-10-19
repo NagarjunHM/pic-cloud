@@ -5,9 +5,11 @@ import { AiOutlineClose, AiOutlineEdit } from "react-icons/ai";
 import { BiArrowBack } from "react-icons/bi";
 import { BsImageFill } from "react-icons/bs";
 import ImageForm from "./ImageForm";
-import { Message, useToaster } from "rsuite";
+import { Message, useToaster, Drawer, Button, Placeholder } from "rsuite";
 
 const ImageList = ({ id, handleHomePageNavigation }) => {
+  const [imageOpen, setImageOpen] = useState(false);
+  const [imageDetail, setImageDetail] = useState([]);
   const [allImageList, setAllImageList] = useState([]);
   const [editImageInfo, setEditImageInfo] = useState([]);
   const toaster = useToaster();
@@ -63,6 +65,12 @@ const ImageList = ({ id, handleHomePageNavigation }) => {
       });
   };
 
+  // function to handle full screen image open
+  const handleImageOpen = (img) => {
+    setImageOpen(true);
+    setImageDetail(img);
+  };
+
   return (
     <>
       <div className="container relative flex flex-row flex-wrap items-center justify-center w-[80%] px-4 m-auto top-20">
@@ -100,6 +108,10 @@ const ImageList = ({ id, handleHomePageNavigation }) => {
                     alt={item[0]}
                     style={{ width: "18rem", height: "12rem" }}
                     className="object-cover duration-200 hover:scale-110"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleImageOpen(item);
+                    }}
                   />
                 ) : (
                   <BsImageFill style={{ width: "18rem", height: "12rem" }} />
@@ -110,6 +122,35 @@ const ImageList = ({ id, handleHomePageNavigation }) => {
           </div>
         ))}
       </div>
+
+      {/* full screen image viewer */}
+      <Drawer
+        size="full"
+        placement="bottom"
+        open={imageOpen}
+        onClose={() => setImageOpen(false)}
+      >
+        <Drawer.Header>
+          <Drawer.Title>{imageDetail[0]}</Drawer.Title>
+          <Drawer.Actions>
+            <Button onClick={() => setImageOpen(false)}>Close</Button>
+          </Drawer.Actions>
+        </Drawer.Header>
+        <Drawer.Body>
+          <div className="h-[100%] ">
+            <img
+              src={imageDetail[1]}
+              alt={imageDetail[0]}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                opacity: "1",
+              }}
+            />
+          </div>
+        </Drawer.Body>
+      </Drawer>
 
       {/* Back arrow button */}
       <button
