@@ -5,7 +5,7 @@ import { AiOutlineClose, AiOutlineEdit } from "react-icons/ai";
 import { BiArrowBack } from "react-icons/bi";
 import { BsImageFill } from "react-icons/bs";
 import ImageForm from "./ImageForm";
-import { Message, useToaster, Drawer, Button, Placeholder } from "rsuite";
+import { Message, useToaster, Drawer, Button } from "rsuite";
 
 const ImageList = ({ id, handleHomePageNavigation }) => {
   const [imageOpen, setImageOpen] = useState(false);

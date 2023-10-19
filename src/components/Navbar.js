@@ -1,7 +1,7 @@
 const Navbar = ({ homePage, handleHomePageNavigation, albumId }) => {
   return (
     <div className="fixed top-0 z-10 flex items-baseline w-full p-5 shadow-xl bg-slate-800">
-      <div className="pr-5 text-3xl cursor-default">PhotoFolio</div>
+      <div className="pr-5 text-3xl cursor-default">PicCloud</div>
 
       {homePage ? (
         <nav className="w-full rounded-md">
