@@ -6,13 +6,19 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyDlRkknC5J8vehxmvC4M3RmWxUAPuQnuQc",
+
+  authDomain: "piccloud-597d3.firebaseapp.com",
+
+  projectId: "piccloud-597d3",
+
+  storageBucket: "piccloud-597d3.appspot.com",
+
+  messagingSenderId: "1084324161929",
+
+  appId: "1:1084324161929:web:a56992c29ae61c1b649958",
 };
+
 //replace the above code block with your configuration
 
 // Initialize Firebase

@@ -3,17 +3,19 @@ import { AiFillFolder } from "react-icons/ai";
 import { AiOutlineClose } from "react-icons/ai";
 import AlbumsForm from "./AlbumsForm";
 import { db } from "../firebaseInit";
-import { Message, useToaster } from "rsuite";
+import { Message, useToaster, Loader } from "rsuite";
 import { onSnapshot, collection, deleteDoc, doc } from "firebase/firestore";
 
 const AlbumsList = ({ handleImagePageNavigation }) => {
   const toaster = useToaster();
 
   const [albumList, setAlbumList] = useState([]);
+  const [isLoading, setIsLoading] = useState([]);
 
   //useEffect to fetch the data from fireStore and add it to useState varaible onMount
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "AlbumList"), (doc) => {
+      setAlbumList(true);
       let album = doc.docs.map((doc) => {
         return {
           id: doc.id,
@@ -21,6 +23,7 @@ const AlbumsList = ({ handleImagePageNavigation }) => {
       });
       // console.log(album);
       setAlbumList([...album]);
+      setIsLoading(false);
     });
     return () => {
       unsub();
@@ -61,38 +64,53 @@ const AlbumsList = ({ handleImagePageNavigation }) => {
       });
   };
 
+  if (isLoading) {
+    return (
+      <div>
+        <Loader size="lg" inverse center content="loading..." />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="container  w-[80%] m-auto px-4 flex flex-wrap flex-row justify-center items-center relative top-20">
         {/* Map Functio to render the list of albums on to the screen */}
-        {albumList.map((item, index) => (
-          <div
-            key={index}
-            className="p-5 "
-            onClick={() => {
-              handleImagePageNavigation(item.id);
-            }}
-          >
-            <div className=" relative w-[16em] h-[16em] border border-slate-800 bg-slate-800 shadow-md hover:border-slate-600 hover:box-border hover:shadow-blue-300/50  rounded-lg flex flex-row justify-center items-center">
-              <div className="absolute flex items-center right-2 top-2">
-                <button
-                  className="p-3 rounded-lg hover:bg-slate-500"
-                  onClick={(e) => {
-                    handleAlbumDelete(item.id);
-                    console.log(item.id);
-                    e.stopPropagation();
-                  }}
-                >
-                  <AiOutlineClose size="1.3em" />
-                </button>
-              </div>
-              <AiFillFolder size="13em" />
-              <div className="absolute m-1 text-xl text-center truncate bottom-3">
-                {item["id"]}
+
+        {albumList.length === 0 ? (
+          <div className="fixed text-2xl font-semibold top-[50%] ">
+            No Album Yet
+          </div>
+        ) : (
+          albumList.map((item, index) => (
+            <div
+              key={index}
+              className="p-5 "
+              onClick={() => {
+                handleImagePageNavigation(item.id);
+              }}
+            >
+              <div className=" relative w-[16em] h-[16em] border border-slate-800 bg-slate-800 shadow-md hover:border-slate-600 hover:box-border hover:shadow-blue-300/50  rounded-lg flex flex-row justify-center items-center">
+                <div className="absolute flex items-center right-2 top-2">
+                  <button
+                    className="p-3 rounded-lg hover:bg-slate-500"
+                    onClick={(e) => {
+                      handleAlbumDelete(item.id);
+                      console.log(item.id);
+                      e.stopPropagation();
+                    }}
+                  >
+                    <AiOutlineClose size="1.3em" />
+                  </button>
+                </div>
+                <AiFillFolder size="13em" />
+                <div className="absolute m-1 text-xl text-center truncate bottom-3">
+                  {item["id"]}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
       <AlbumsForm />
     </>

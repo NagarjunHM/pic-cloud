@@ -5,9 +5,10 @@ import { AiOutlineClose, AiOutlineEdit } from "react-icons/ai";
 import { BiArrowBack } from "react-icons/bi";
 import { BsImageFill } from "react-icons/bs";
 import ImageForm from "./ImageForm";
-import { Message, useToaster, Drawer, Button } from "rsuite";
+import { Message, useToaster, Drawer, Button, Loader } from "rsuite";
 
 const ImageList = ({ id, handleHomePageNavigation }) => {
+  const [isLoading, setIsLoading] = useState([]);
   const [imageOpen, setImageOpen] = useState(false);
   const [imageDetail, setImageDetail] = useState([]);
   const [allImageList, setAllImageList] = useState([]);
@@ -17,9 +18,10 @@ const ImageList = ({ id, handleHomePageNavigation }) => {
 
   // useEffect to set the list of image to a state on mount
   useEffect(() => {
-    console.log(id);
+    setIsLoading(true);
     const unsub = onSnapshot(doc(db, "AlbumList", id), (doc) => {
       setAllImageList(Object.entries(doc.data()));
+      setIsLoading(false);
     });
     return () => {
       unsub();
@@ -71,56 +73,72 @@ const ImageList = ({ id, handleHomePageNavigation }) => {
     setImageDetail(img);
   };
 
+  if (isLoading) {
+    return (
+      <div>
+        <Loader size="lg" inverse center content="loading..." />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="container relative flex flex-row flex-wrap items-center justify-center w-[80%] px-4 m-auto top-20">
-        {allImageList.map((item, index) => (
-          <div className="p-5" key={index}>
-            <div className="flex flex-col overflow-hidden border rounded-lg shadow-md border-slate-800 bg-slate-800 hover:border-slate-600 hover:box-border hover:shadow-blue-300/50">
-              <div>
-                {/* Button to delete the image from the album */}
-                <button
-                  className="z-10 float-right p-3 rounded-lg hover:bg-slate-700"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleImageDelete(item);
-                  }}
-                >
-                  <AiOutlineClose size="1.3em" />
-                </button>
-
-                {/* Button to edit the image name and url */}
-                <button
-                  className="z-10 float-right p-3 rounded-lg hover:bg-slate-700"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    childRef.current.click();
-                    setEditImageInfo(item);
-                  }}
-                >
-                  <AiOutlineEdit size="1.3em" />
-                </button>
-              </div>
-              <div className="overflow-hidden">
-                {item[1] !== "" ? (
-                  <img
-                    src={item[1]}
-                    alt={item[0]}
-                    style={{ width: "18rem", height: "12rem" }}
-                    className="object-cover duration-200 hover:scale-110"
+        {allImageList.length === 0 ? (
+          <div className="fixed text-2xl font-semibold top-[50%] ">
+            No Image Yet
+          </div>
+        ) : (
+          allImageList.map((item, index) => (
+            <div className="p-5" key={index}>
+              <div className="flex flex-col overflow-hidden border rounded-lg shadow-md border-slate-800 bg-slate-800 hover:border-slate-600 hover:box-border hover:shadow-blue-300/50">
+                <div>
+                  {/* Button to delete the image from the album */}
+                  <button
+                    className="z-10 float-right p-3 rounded-lg hover:bg-slate-700"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleImageOpen(item);
+                      handleImageDelete(item);
                     }}
-                  />
-                ) : (
-                  <BsImageFill style={{ width: "18rem", height: "12rem" }} />
-                )}
+                  >
+                    <AiOutlineClose size="1.3em" />
+                  </button>
+
+                  {/* Button to edit the image name and url */}
+                  <button
+                    className="z-10 float-right p-3 rounded-lg hover:bg-slate-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      childRef.current.click();
+                      setEditImageInfo(item);
+                    }}
+                  >
+                    <AiOutlineEdit size="1.3em" />
+                  </button>
+                </div>
+                <div className="overflow-hidden">
+                  {item[1] !== "" ? (
+                    <img
+                      src={item[1]}
+                      alt={item[0]}
+                      style={{ width: "18rem", height: "12rem" }}
+                      className="object-cover duration-200 hover:scale-110"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageOpen(item);
+                      }}
+                    />
+                  ) : (
+                    <BsImageFill style={{ width: "18rem", height: "12rem" }} />
+                  )}
+                </div>
+                <div className="p-3 text-xl text-center bottom-3">
+                  {item[0]}
+                </div>
               </div>
-              <div className="p-3 text-xl text-center bottom-3">{item[0]}</div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* full screen image viewer */}
